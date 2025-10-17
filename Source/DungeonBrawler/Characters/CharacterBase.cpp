@@ -1,7 +1,8 @@
 // Fill out your copyright notice in the Description page of Project Settings.
 
-#include "PaperFlipbookComponent.h"
 #include "CharacterBase.h"
+#include "PaperFlipbookComponent.h"
+
 
 ACharacterBase::ACharacterBase()
 {

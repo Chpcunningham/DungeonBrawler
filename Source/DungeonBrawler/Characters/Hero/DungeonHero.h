@@ -7,6 +7,9 @@
 #include "DungeonHero.generated.h"
 
 class UCameraComponent;
+class UInputAction;
+struct FInputActionValue;
+class UInputMappingContext;
 class USpringArmComponent;
 /**
  * 
@@ -19,9 +22,20 @@ class DUNGEONBRAWLER_API ADungeonHero : public ACharacterBase
 public:
 	ADungeonHero();
 
+	virtual void BeginPlay() override;
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
+
+	void MoveHero(const FInputActionValue& Value);
+
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArm;
 	
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditAnywhere)
+	UInputMappingContext* InputMappingContext;
+	
+	UPROPERTY(EditAnywhere)
+	UInputAction* MoveAction; 
 };
