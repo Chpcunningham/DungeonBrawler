@@ -18,7 +18,7 @@ ADungeonHero::ADungeonHero()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
 	GetSprite()->SetUsingAbsoluteRotation(true);
-	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.f, 3600.0f);
+	
 	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
