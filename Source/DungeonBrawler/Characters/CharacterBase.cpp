@@ -2,6 +2,7 @@
 
 #include "CharacterBase.h"
 #include "PaperFlipbookComponent.h"
+#include "Components/BoxComponent.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -14,4 +15,17 @@ ACharacterBase::ACharacterBase()
 	
 	GetSprite()->AddWorldRotation(FRotator(0, 0, 270.f));
 	GetSprite()->SetUsingAbsoluteRotation(true);
+
+	HurtBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HurtBox"));
+	HurtBox->SetupAttachment(RootComponent);
+
+	OnTakeAnyDamage.AddDynamic(this, &ACharacterBase::AnyDamageTaken);
+	
+	this->SetCanBeDamaged(true);
+	
+}
+
+void ACharacterBase::AnyDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
+{
+	GEngine->AddOnScreenDebugMessage(1, 4.5f, FColor::Blue, FString(TEXT("Take that damage")));
 }

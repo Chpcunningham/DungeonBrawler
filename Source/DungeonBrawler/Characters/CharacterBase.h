@@ -17,4 +17,9 @@ class DUNGEONBRAWLER_API ACharacterBase : public APaperZDCharacter
 public:
 	ACharacterBase();
 
+	UFUNCTION()
+	void AnyDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UBoxComponent* HurtBox;
 };

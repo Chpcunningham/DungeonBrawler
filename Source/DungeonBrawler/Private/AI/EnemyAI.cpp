@@ -30,6 +30,16 @@ void AEnemyAI::Tick(float DeltaTime)
 
 		ForwardVectorTarget = UKismetMathLibrary::GetForwardVector(TargetRotation);
 
-		PossessedPawn->MoveEnemy(ForwardVectorTarget);
+		if (GetDistanceToHero() > StopDistance)
+		{
+			PossessedPawn->MoveEnemy(ForwardVectorTarget);
+		}
 	}
+}
+
+float AEnemyAI::GetDistanceToHero()
+{
+	float distance =UKismetMathLibrary::Vector_Distance(TargetHero->GetActorLocation(), PossessedPawn->GetActorLocation());
+
+	return distance;
 }

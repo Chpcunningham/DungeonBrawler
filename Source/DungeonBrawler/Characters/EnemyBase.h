@@ -21,6 +21,9 @@ public:
 
 	UFUNCTION()
 	void MoveEnemy(FVector WorldDirection);
+
+	UFUNCTION()
+	void OnOverlapHero(UPrimitiveComponent* OverlappedComponent, AActor* OtherActor, UPrimitiveComponent* OtherComp, int32 OtherBodyIndex, bool bFromSweep, const FHitResult& SweepResult);
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category=AnimBP)
 	TSubclassOf<UPaperZDAnimInstance> EnemyInstance;

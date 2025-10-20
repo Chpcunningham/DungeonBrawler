@@ -19,7 +19,6 @@ ADungeonHero::ADungeonHero()
 	bUseControllerRotationYaw = false;
 	GetSprite()->SetUsingAbsoluteRotation(true);
 	
-	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	SpringArm->SetWorldRotation(FRotator(270.f, 270.f, 0));
@@ -33,6 +32,8 @@ ADungeonHero::ADungeonHero()
 	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
 	HitBox->SetupAttachment(GetCapsuleComponent());
 	HitBox->SetWorldLocation(FVector(30.f,0.f,0.f));
+
+	HurtBox->SetBoxExtent(FVector(22.f,22.f,70.f));
 }
 
 void ADungeonHero::BeginPlay()

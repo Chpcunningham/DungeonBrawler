@@ -21,9 +21,14 @@ public:
 	virtual void BeginPlay() override;
 	virtual void Tick(float DeltaTime) override;
 
+	float GetDistanceToHero();
+
 	UPROPERTY(EditAnywhere)
 	class AEnemyBase* PossessedPawn;
 
 	UPROPERTY(EditAnywhere)
 	class APawn* TargetHero;
+
+private:
+	float StopDistance = 10.f;
 };
