@@ -5,25 +5,42 @@
 #include "Camera/CameraComponent.h"
 #include "Components/CapsuleComponent.h"
 #include "EnhancedInputComponent.h"
+#include "PaperZDAnimationComponent.h"
 #include "EnhancedInputSubsystems.h"
+#include "PaperFlipbookComponent.h"
+#include "Components/BoxComponent.h"
+#include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 
 ADungeonHero::ADungeonHero()
 {
+	//Set up rotation for hit boxes
+	GetCharacterMovement()->bOrientRotationToMovement = true;
+	bUseControllerRotationYaw = false;
+	GetSprite()->SetUsingAbsoluteRotation(true);
+	GetCharacterMovement()->RotationRate = FRotator(0.0f, 0.f, 3600.0f);
+	
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	SpringArm->SetWorldRotation(FRotator(270.f, 270.f, 0));
+	SpringArm->SetUsingAbsoluteRotation(true);
 	
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	CameraComponent->SetupAttachment(SpringArm);
 	CameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
 	CameraComponent->OrthoWidth = 800.f;
+
+	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
+	HitBox->SetupAttachment(GetCapsuleComponent());
+	HitBox->SetWorldLocation(FVector(30.f,0.f,0.f));
 }
 
 void ADungeonHero::BeginPlay()
 {
 	Super::BeginPlay();
 
+	GetAnimationComponent()->SetAnimInstanceClass(HeroInstance);
+	
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
 		if (UEnhancedInputLocalPlayerSubsystem* PlayerSubsystem  = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
@@ -46,7 +63,7 @@ void ADungeonHero::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 void ADungeonHero::MoveHero(const FInputActionValue& Value)
 {
 	FVector2D MovementVector = Value.Get<FVector2D>();
-
+	
 	const FRotator Rotation = GetControlRotation();
 	const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -55,4 +72,6 @@ void ADungeonHero::MoveHero(const FInputActionValue& Value)
 
 	AddMovementInput(ForwardVector, MovementVector.X);
 	AddMovementInput(RightVector, MovementVector.Y);
+
+	Directionality = FVector2D(MovementVector.X, MovementVector.Y);
 }

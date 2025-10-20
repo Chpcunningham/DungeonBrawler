@@ -7,6 +7,7 @@
 #include "DungeonHero.generated.h"
 
 class UCameraComponent;
+class UBoxComponent;
 class UInputAction;
 struct FInputActionValue;
 class UInputMappingContext;
@@ -27,11 +28,20 @@ public:
 
 	void MoveHero(const FInputActionValue& Value);
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	FVector2D Directionality;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<UPaperZDAnimInstance> HeroInstance;
+	
 	UPROPERTY(EditAnywhere)
 	USpringArmComponent* SpringArm;
 	
 	UPROPERTY(EditAnywhere)
 	UCameraComponent* CameraComponent;
+
+	UPROPERTY(EditAnywhere)
+	UBoxComponent* HitBox;
 
 	UPROPERTY(EditAnywhere)
 	UInputMappingContext* InputMappingContext;
