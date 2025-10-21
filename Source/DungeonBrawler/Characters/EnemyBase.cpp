@@ -35,6 +35,6 @@ void AEnemyBase::OnOverlapHero(UPrimitiveComponent* OverlappedComponent, AActor*
 {
 	if (ADungeonHero* Hero = Cast<ADungeonHero>(OtherActor))
 	{
-		UGameplayStatics::ApplyDamage(Hero, 10.f, this->GetController(), this, UDamageType::StaticClass());
+		UGameplayStatics::ApplyDamage(Hero, 1.f, this->GetController(), this, UDamageType::StaticClass());
 	}
 }

@@ -3,6 +3,7 @@
 #include "CharacterBase.h"
 #include "PaperFlipbookComponent.h"
 #include "Components/BoxComponent.h"
+#include "DungeonBrawler/Public/Components/HealthComp.h"
 #include "GameFramework/CharacterMovementComponent.h"
 
 
@@ -20,6 +21,7 @@ ACharacterBase::ACharacterBase()
 	HurtBox->SetupAttachment(RootComponent);
 
 	OnTakeAnyDamage.AddDynamic(this, &ACharacterBase::AnyDamageTaken);
+	HealthComp = CreateDefaultSubobject<UHealthComp>(TEXT("HealthComp"));
 	
 	this->SetCanBeDamaged(true);
 	
@@ -27,5 +29,10 @@ ACharacterBase::ACharacterBase()
 
 void ACharacterBase::AnyDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser)
 {
-	GEngine->AddOnScreenDebugMessage(1, 4.5f, FColor::Blue, FString(TEXT("Take that damage")));
+	if (!HealthComp->IsDefeated)
+	{
+		HealthComp->DecreaseHealth(Damage);
+		GEngine->AddOnScreenDebugMessage(0, 4.5f, FColor::Blue, FString::Printf(TEXT("Defeated: %s"), HealthComp->IsDefeated ? TEXT("true") : TEXT("false")));
+	}
+	
 }
