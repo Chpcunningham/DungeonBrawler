@@ -14,11 +14,11 @@ UHealthComp::UHealthComp()
 
 void UHealthComp::DecreaseHealth(float Damage)
 {
-		CurrentHealth -= Damage;
-		if (!UKismetMathLibrary::Max(CurrentHealth, 0.0f))
-		{
-			IsDefeated = true;
-		}
+	CurrentHealth -= Damage;
+	if (!UKismetMathLibrary::Max(CurrentHealth, 0.0f))
+	{
+		IsDefeated = true;
+	}
 }
 
 
@@ -35,4 +35,3 @@ void UHealthComp::TickComponent(float DeltaTime, ELevelTick TickType, FActorComp
 {
 	Super::TickComponent(DeltaTime, TickType, ThisTickFunction);
 }
-

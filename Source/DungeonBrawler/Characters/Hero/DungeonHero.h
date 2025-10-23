@@ -3,6 +3,7 @@
 #pragma once
 
 #include "CoreMinimal.h"
+#include "InputActionValue.h"
 #include "DungeonBrawler/Characters/CharacterBase.h"
 #include "DungeonHero.generated.h"
 
@@ -24,10 +25,16 @@ public:
 	ADungeonHero();
 
 	virtual void BeginPlay() override;
-	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent);
+	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
 
-	void MoveHero(const FInputActionValue& Value);
+	
 
+	UFUNCTION(BlueprintCallable)
+	void CheckHitBox();
+	
+	UFUNCTION()
+	void OnAttackCompleted(bool isCompleted);
+	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D Directionality;
 
@@ -43,9 +50,23 @@ public:
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* HitBox;
 
+	
+
+protected:
+
+private:
+	bool IsAttacking;
+
 	UPROPERTY(EditAnywhere)
 	UInputMappingContext* InputMappingContext;
 	
 	UPROPERTY(EditAnywhere)
-	UInputAction* MoveAction; 
+	UInputAction* MoveAction;
+
+	UPROPERTY(EditAnywhere)
+	UInputAction* SwordAction;
+	
+	void SwingSword(const FInputActionValue& Value);
+	void MoveHero(const FInputActionValue& Value);
+	bool CanMoveHero();
 };

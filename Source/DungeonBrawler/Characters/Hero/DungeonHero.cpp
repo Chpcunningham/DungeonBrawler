@@ -8,9 +8,13 @@
 #include "PaperZDAnimationComponent.h"
 #include "EnhancedInputSubsystems.h"
 #include "PaperFlipbookComponent.h"
+#include "PaperZDAnimInstance.h"
 #include "Components/BoxComponent.h"
+#include "Components/HealthComp.h"
+#include "DungeonBrawler/Characters/EnemyBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
+#include "Kismet/GameplayStatics.h"
 
 ADungeonHero::ADungeonHero()
 {
@@ -58,21 +62,69 @@ void ADungeonHero::SetupPlayerInputComponent(UInputComponent* PlayerInputCompone
 	if (UEnhancedInputComponent* EnhancedInput = Cast<UEnhancedInputComponent>(PlayerInputComponent))
 	{
 		EnhancedInput->BindAction(MoveAction, ETriggerEvent::Triggered, this, &ADungeonHero::MoveHero);
+		EnhancedInput->BindAction(SwordAction, ETriggerEvent::Started, this, &ADungeonHero::SwingSword);
 	}
+}
+
+void ADungeonHero::SwingSword(const FInputActionValue& Value)
+{
+	if (CanMoveHero())
+	{
+		if (UPaperZDAnimInstance* CharAnimInstance = GetAnimationComponent()->GetAnimInstance())
+		{
+			IsAttacking = true;
+
+			CharAnimInstance->PlayAnimationOverride(
+				SwordAttackSequence,
+				FName("DefaultSlot"),
+				2.f,
+				0,
+				FZDOnAnimationOverrideEndSignature::CreateUObject(this, &ADungeonHero::OnAttackCompleted));
+		}
+	}
+}
+void ADungeonHero::OnAttackCompleted(bool isCompleted)
+{
+	IsAttacking = false;
 }
 
 void ADungeonHero::MoveHero(const FInputActionValue& Value)
 {
-	FVector2D MovementVector = Value.Get<FVector2D>();
+	if (CanMoveHero())
+	{
+		FVector2D MovementVector = Value.Get<FVector2D>();
 	
-	const FRotator Rotation = GetControlRotation();
-	const FRotator YawRotation(0, Rotation.Yaw, 0);
+		const FRotator Rotation = GetControlRotation();
+		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
-	const FVector ForwardVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
-	const FVector RightVector = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
+		const FVector ForwardVector = FRotationMatrix(YawRotation).GetUnitAxis(EAxis::X);
+		const FVector RightVector = FRotationMatrix(Rotation).GetUnitAxis(EAxis::Y);
 
-	AddMovementInput(ForwardVector, MovementVector.X);
-	AddMovementInput(RightVector, MovementVector.Y);
+		AddMovementInput(ForwardVector, MovementVector.X);
+		AddMovementInput(RightVector, MovementVector.Y);
 
-	Directionality = FVector2D(MovementVector.X, MovementVector.Y);
+		Directionality = FVector2D(MovementVector.X, MovementVector.Y);
+	}
 }
+
+bool ADungeonHero::CanMoveHero()
+{
+	if (!IsStunned && !HealthComp->IsDefeated && !IsAttacking)
+	{
+		return true;
+	}
+	return false;
+}
+
+void ADungeonHero::CheckHitBox()
+{
+	TArray<AActor*> OverlappingActors;
+	HitBox->GetOverlappingActors(OverlappingActors, AEnemyBase::StaticClass());
+
+	for (auto It = OverlappingActors.rbegin(); It != OverlappingActors.rend(); ++It)
+	{
+		UGameplayStatics::ApplyDamage(*It, 1.f, GetController(), this, UDamageType::StaticClass());
+	}
+}
+
+
