@@ -20,6 +20,9 @@ public:
 	ACharacterBase();
 
 	virtual void BeginPlay() override;
+
+	FTimerHandle FlashSpriteHandle;
+	FTimerHandle HitStopHandle;
 	
 	UPROPERTY(EditAnywhere)
 	bool IsStunned;
@@ -32,6 +35,12 @@ public:
 
 	UFUNCTION()
 	void GetKnockBack(AActor* Actor);
+
+	UFUNCTION()
+	void SpriteBackToWhite();
+
+	UFUNCTION()
+	void EndHitStop(ACharacterBase* DamagedActor, ACharacterBase* DamageCauser);
 
 	UFUNCTION()
 	void KnockbackTimelineUpdate(float Value);
@@ -62,5 +71,7 @@ protected:
 	class UCurveFloat* KnockbackCurve;
 	
 private:
-	FOnTimelineFloat KnockbackUpdate; 
+	FOnTimelineFloat KnockbackUpdate;
+
+	float HitStopDuration = 0.1f;
 };

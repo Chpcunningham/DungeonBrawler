@@ -57,11 +57,34 @@ void ACharacterBase::AnyDamageTaken(AActor* DamagedActor, float Damage, const cl
 	{
 		HealthComp->DecreaseHealth(Damage);
 		GetKnockBack(DamageCauser);
+		GetSprite()->SetSpriteColor(FColor::Red);
+		GetWorldTimerManager().SetTimer(
+			FlashSpriteHandle,
+			this,
+			&ACharacterBase::SpriteBackToWhite,
+			0.2f,
+			false
+		);
+		if (ACharacterBase* HitActor = Cast<ACharacterBase>(DamagedActor))
+		{
+			if (ACharacterBase* ActorHit = Cast<ACharacterBase>(DamageCauser))
+			{
+				HitActor->CustomTimeDilation = 0.f;
+				ActorHit->CustomTimeDilation = 0.f;
+				GetWorldTimerManager().SetTimer(
+					HitStopHandle,
+					FTimerDelegate::CreateUObject(
+						this, &ACharacterBase::EndHitStop, HitActor, ActorHit
+					),
+					HitStopDuration,
+					false
 
+				);
+			}
+		}
 		if (UPaperZDAnimInstance* CharAnimInstance = GetAnimationComponent()->GetAnimInstance())
 		{
 			IsStunned = true;
-
 			CharAnimInstance->PlayAnimationOverride(
 				StunnedSequence,
 				FName("DefaultSlot"),
@@ -85,10 +108,21 @@ void ACharacterBase::GetKnockBack(AActor* Actor)
 	KnockbackTimeline->PlayFromStart();
 }
 
+void ACharacterBase::SpriteBackToWhite()
+{
+	GetSprite()->SetSpriteColor(FColor::White);
+}
+
+void ACharacterBase::EndHitStop(ACharacterBase* DamagedActor, ACharacterBase* DamageCauser)
+{
+	DamagedActor->CustomTimeDilation = 1.f;
+	DamageCauser->CustomTimeDilation = 1.f;
+}
+
+
 void ACharacterBase::KnockbackTimelineUpdate(float Value)
 {
 	FVector TotalKnockback = UKismetMathLibrary::Multiply_VectorFloat(KnockbackVector, KnockbackStrength);
-
 	this->GetCharacterMovement()->Velocity = TotalKnockback;
 }
 
