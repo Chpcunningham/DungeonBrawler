@@ -27,6 +27,27 @@ void AEnemyBase::BeginPlay()
 	GetAnimationComponent()->SetAnimInstanceClass(EnemyInstance);
 }
 
+void AEnemyBase::HandleHitExtension()
+{
+	if (ACharacterBase* Enemy = Cast<ACharacterBase>(this))
+	{
+		Enemy->CustomTimeDilation = 0.f;
+		GetWorldTimerManager().SetTimer(
+			this->EnemyHitHandle,
+			FTimerDelegate::CreateUObject(
+				this, &AEnemyBase::EndHitStop, Enemy
+			),
+			this->HitStopDuration,
+			false
+		);
+	}
+}
+
+void AEnemyBase::EndHitStop(ACharacterBase* ActorHitStop)
+{
+	Super::EndHitStop(ActorHitStop);
+}
+
 void AEnemyBase::MoveEnemy(FVector WorldDirection)
 {
 	if (!this->HealthComp->IsDefeated)

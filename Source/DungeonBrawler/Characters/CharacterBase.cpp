@@ -57,6 +57,7 @@ void ACharacterBase::AnyDamageTaken(AActor* DamagedActor, float Damage, const cl
 	{
 		HealthComp->DecreaseHealth(Damage);
 		GetKnockBack(DamageCauser);
+
 		GetSprite()->SetSpriteColor(FColor::Red);
 		GetWorldTimerManager().SetTimer(
 			FlashSpriteHandle,
@@ -65,33 +66,36 @@ void ACharacterBase::AnyDamageTaken(AActor* DamagedActor, float Damage, const cl
 			0.2f,
 			false
 		);
+
+
 		if (ACharacterBase* HitActor = Cast<ACharacterBase>(DamagedActor))
 		{
-			if (ACharacterBase* ActorHit = Cast<ACharacterBase>(DamageCauser))
+			if (ACharacterBase* ActorHitStop = Cast<ACharacterBase>(DamageCauser))
 			{
-				HitActor->CustomTimeDilation = 0.f;
-				ActorHit->CustomTimeDilation = 0.f;
+				//HitActor->CustomTimeDilation = 0.f;
+				ActorHitStop->CustomTimeDilation = 0.f;
 				GetWorldTimerManager().SetTimer(
 					HitStopHandle,
 					FTimerDelegate::CreateUObject(
-						this, &ACharacterBase::EndHitStop, HitActor, ActorHit
+						this, &ACharacterBase::EndHitStop, ActorHitStop
 					),
 					HitStopDuration,
 					false
 
 				);
+				HitActor->HandleHitExtension();
 			}
 		}
-		if (UPaperZDAnimInstance* CharAnimInstance = GetAnimationComponent()->GetAnimInstance())
-		{
-			IsStunned = true;
-			CharAnimInstance->PlayAnimationOverride(
-				StunnedSequence,
-				FName("DefaultSlot"),
-				1.f,
-				0,
-				FZDOnAnimationOverrideEndSignature::CreateUObject(this, &ACharacterBase::OnStunnedOverrideCompleted));
-		}
+		// if (UPaperZDAnimInstance* CharAnimInstance = GetAnimationComponent()->GetAnimInstance())
+		// {
+		// 	IsStunned = true;
+		// 	CharAnimInstance->PlayAnimationOverride(
+		// 		StunnedSequence,
+		// 		FName("DefaultSlot"),
+		// 		1.f,
+		// 		0,
+		// 		FZDOnAnimationOverrideEndSignature::CreateUObject(this, &ACharacterBase::OnStunnedOverrideCompleted));
+		// }
 	}
 }
 
@@ -113,10 +117,9 @@ void ACharacterBase::SpriteBackToWhite()
 	GetSprite()->SetSpriteColor(FColor::White);
 }
 
-void ACharacterBase::EndHitStop(ACharacterBase* DamagedActor, ACharacterBase* DamageCauser)
+void ACharacterBase::EndHitStop(ACharacterBase* ActorHitStop)
 {
-	DamagedActor->CustomTimeDilation = 1.f;
-	DamageCauser->CustomTimeDilation = 1.f;
+	ActorHitStop->CustomTimeDilation = 1.f;
 }
 
 

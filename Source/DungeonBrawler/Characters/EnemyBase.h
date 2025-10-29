@@ -6,9 +6,7 @@
 #include "CharacterBase.h"
 #include "EnemyBase.generated.h"
 
-/**
- * 
- */
+
 UCLASS()
 class DUNGEONBRAWLER_API AEnemyBase : public ACharacterBase
 {
@@ -16,9 +14,13 @@ class DUNGEONBRAWLER_API AEnemyBase : public ACharacterBase
 
 public:
 	AEnemyBase();
-
+	
 	virtual void BeginPlay() override;
-
+	
+	virtual void HandleHitExtension() override;
+	
+	virtual void EndHitStop(ACharacterBase* ActorHitStop) override;
+	
 	UFUNCTION()
 	void MoveEnemy(FVector WorldDirection);
 
@@ -27,4 +29,8 @@ public:
 	
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category=AnimBP)
 	TSubclassOf<UPaperZDAnimInstance> EnemyInstance;
+
+private:
+	FTimerHandle EnemyHitHandle;
+	float HitStopDuration = 0.1f;
 };

@@ -24,16 +24,22 @@ class DUNGEONBRAWLER_API ADungeonHero : public ACharacterBase
 public:
 	ADungeonHero();
 
+	
+	
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
-
 	
-
 	UFUNCTION(BlueprintCallable)
 	void CheckHitBox();
 	
 	UFUNCTION()
 	void OnAttackCompleted(bool isCompleted);
+
+	virtual void HandleHitExtension() override;
+
+	virtual void EndHitStop(ACharacterBase* ActorHitStop) override;
+
+	virtual void OnStunnedOverrideCompleted(bool isCompleted) override;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D Directionality;
@@ -49,13 +55,11 @@ public:
 
 	UPROPERTY(EditAnywhere)
 	UBoxComponent* HitBox;
-
-	
-
-protected:
-
 private:
 	bool IsAttacking;
+
+	FTimerHandle HeroHitHandle;
+	float HitStopDuration = 0.1f;
 
 	UPROPERTY(EditAnywhere)
 	UInputMappingContext* InputMappingContext;

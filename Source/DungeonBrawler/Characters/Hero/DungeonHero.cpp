@@ -22,12 +22,12 @@ ADungeonHero::ADungeonHero()
 	GetCharacterMovement()->bOrientRotationToMovement = true;
 	bUseControllerRotationYaw = false;
 	GetSprite()->SetUsingAbsoluteRotation(true);
-	
+
 	SpringArm = CreateDefaultSubobject<USpringArmComponent>(TEXT("Spring Arm"));
 	SpringArm->SetupAttachment(GetCapsuleComponent());
 	SpringArm->SetWorldRotation(FRotator(270.f, 270.f, 0));
 	SpringArm->SetUsingAbsoluteRotation(true);
-	
+
 	CameraComponent = CreateDefaultSubobject<UCameraComponent>(TEXT("PlayerCamera"));
 	CameraComponent->SetupAttachment(SpringArm);
 	CameraComponent->ProjectionMode = ECameraProjectionMode::Orthographic;
@@ -35,9 +35,9 @@ ADungeonHero::ADungeonHero()
 
 	HitBox = CreateDefaultSubobject<UBoxComponent>(TEXT("HitBox"));
 	HitBox->SetupAttachment(GetCapsuleComponent());
-	HitBox->SetWorldLocation(FVector(30.f,0.f,0.f));
+	HitBox->SetWorldLocation(FVector(30.f, 0.f, 0.f));
 
-	HurtBox->SetBoxExtent(FVector(22.f,22.f,70.f));
+	HurtBox->SetBoxExtent(FVector(22.f, 22.f, 70.f));
 }
 
 void ADungeonHero::BeginPlay()
@@ -45,10 +45,11 @@ void ADungeonHero::BeginPlay()
 	Super::BeginPlay();
 
 	GetAnimationComponent()->SetAnimInstanceClass(HeroInstance);
-	
+
 	if (APlayerController* PlayerController = Cast<APlayerController>(GetController()))
 	{
-		if (UEnhancedInputLocalPlayerSubsystem* PlayerSubsystem  = ULocalPlayer::GetSubsystem<UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
+		if (UEnhancedInputLocalPlayerSubsystem* PlayerSubsystem = ULocalPlayer::GetSubsystem<
+			UEnhancedInputLocalPlayerSubsystem>(PlayerController->GetLocalPlayer()))
 		{
 			PlayerSubsystem->AddMappingContext(InputMappingContext, 0);
 		}
@@ -83,9 +84,48 @@ void ADungeonHero::SwingSword(const FInputActionValue& Value)
 		}
 	}
 }
+
 void ADungeonHero::OnAttackCompleted(bool isCompleted)
 {
 	IsAttacking = false;
+}
+
+void ADungeonHero::HandleHitExtension()
+{
+	if (UPaperZDAnimInstance* CharAnimInstance = GetAnimationComponent()->GetAnimInstance())
+	{
+		IsStunned = true;
+
+		if (ACharacterBase* Hero = Cast<ACharacterBase>(this))
+		{
+			Hero->CustomTimeDilation = 0.f;
+			GetWorldTimerManager().SetTimer(
+				HeroHitHandle,
+				FTimerDelegate::CreateUObject(
+					this, &ADungeonHero::EndHitStop, Hero
+				),
+				this->HitStopDuration,
+				false
+			);
+		}
+
+		CharAnimInstance->PlayAnimationOverride(
+			StunnedSequence,
+			FName("DefaultSlot"),
+			1.f,
+			0,
+			FZDOnAnimationOverrideEndSignature::CreateUObject(this, &ADungeonHero::OnStunnedOverrideCompleted));
+	}
+}
+
+void ADungeonHero::EndHitStop(ACharacterBase* ActorHitStop)
+{
+	Super::EndHitStop(ActorHitStop);
+}
+
+void ADungeonHero::OnStunnedOverrideCompleted(bool isCompleted)
+{
+	Super::OnStunnedOverrideCompleted(isCompleted);
 }
 
 void ADungeonHero::MoveHero(const FInputActionValue& Value)
@@ -93,7 +133,7 @@ void ADungeonHero::MoveHero(const FInputActionValue& Value)
 	if (CanMoveHero())
 	{
 		FVector2D MovementVector = Value.Get<FVector2D>();
-	
+
 		const FRotator Rotation = GetControlRotation();
 		const FRotator YawRotation(0, Rotation.Yaw, 0);
 
@@ -126,5 +166,3 @@ void ADungeonHero::CheckHitBox()
 		UGameplayStatics::ApplyDamage(*It, 1.f, GetController(), this, UDamageType::StaticClass());
 	}
 }
-
-

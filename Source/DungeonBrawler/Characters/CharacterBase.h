@@ -18,20 +18,19 @@ class DUNGEONBRAWLER_API ACharacterBase : public APaperZDCharacter
 
 public:
 	ACharacterBase();
-
 	virtual void BeginPlay() override;
-
-	FTimerHandle FlashSpriteHandle;
-	FTimerHandle HitStopHandle;
 	
 	UPROPERTY(EditAnywhere)
 	bool IsStunned;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	class UBoxComponent* HurtBox;
-	
+
 	UPROPERTY(EditAnywhere, BlueprintReadWrite, Category = "Health Component")
 	class UHealthComp* HealthComp;
+
+	UFUNCTION()
+	virtual void HandleHitExtension(){}
 
 	UFUNCTION()
 	void GetKnockBack(AActor* Actor);
@@ -40,16 +39,17 @@ public:
 	void SpriteBackToWhite();
 
 	UFUNCTION()
-	void EndHitStop(ACharacterBase* DamagedActor, ACharacterBase* DamageCauser);
+	virtual void EndHitStop(ACharacterBase* ActorHitStop);
 
 	UFUNCTION()
 	void KnockbackTimelineUpdate(float Value);
-	
+
 	UFUNCTION()
-	void OnStunnedOverrideCompleted(bool isCompleted);
-	
+	virtual void OnStunnedOverrideCompleted(bool isCompleted);
+
 	UFUNCTION()
-	void AnyDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType, class AController* InstigatedBy, AActor* DamageCauser);
+	void AnyDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
+	                    class AController* InstigatedBy, AActor* DamageCauser);
 
 protected:
 	UPROPERTY(EditAnywhere)
@@ -60,7 +60,7 @@ protected:
 
 	UPROPERTY(EditAnywhere, Category=AnimSequences)
 	class UPaperZDAnimSequence* SwordAttackSequence;
-	
+
 	UPROPERTY(EditAnywhere)
 	float KnockbackStrength = 1000.f;
 
@@ -69,9 +69,11 @@ protected:
 
 	UPROPERTY(EditAnywhere)
 	class UCurveFloat* KnockbackCurve;
-	
+
 private:
 	FOnTimelineFloat KnockbackUpdate;
-
+	FTimerHandle HitStopHandle;
+	FTimerHandle FlashSpriteHandle;
+	
 	float HitStopDuration = 0.1f;
 };
