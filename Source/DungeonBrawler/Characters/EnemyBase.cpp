@@ -46,11 +46,12 @@ void AEnemyBase::HandleHitExtension()
 void AEnemyBase::EndHitStop(ACharacterBase* ActorHitStop)
 {
 	Super::EndHitStop(ActorHitStop);
+	SetStun();
 }
 
 void AEnemyBase::MoveEnemy(FVector WorldDirection)
 {
-	if (!this->HealthComp->IsDefeated)
+	if (!this->HealthComp->IsDefeated && !this->IsStunned)
 	{
 		this->AddMovementInput(WorldDirection, 1.f);
 	}
@@ -70,4 +71,50 @@ void AEnemyBase::OnOverlapHero(UPrimitiveComponent* OverlappedComponent, AActor*
 			}
 		}
 	}
+}
+
+void AEnemyBase::SetStun()
+{
+	this->IsStunned = true;
+	GetWorldTimerManager().SetTimer(
+		SetStunHandle,
+		FTimerDelegate::CreateUObject(
+			this,
+			&AEnemyBase::EndStun),
+			StunnedDuration,
+			false
+			);
+}
+
+void AEnemyBase::EndStun()
+{
+	this->IsStunned = false;
+	if (HealthComp->IsDefeated)
+	{
+		HandleDefeat();
+	}
+}
+
+void AEnemyBase::HandleDefeat()
+{
+	HurtBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
+	GetWorldTimerManager().SetTimer(
+		DespawnHandle,
+		FTimerDelegate::CreateUObject(
+			this, &AEnemyBase::Defeated
+			),
+			DespawnDuration,
+			false
+			);
+}
+
+void AEnemyBase::Defeated()
+{
+	UWorld* MyWorld = GetWorld();
+	FActorSpawnParameters SpawnInfo;
+	SpawnInfo.Owner = this;
+	SpawnInfo.SpawnCollisionHandlingOverride = ESpawnActorCollisionHandlingMethod::AlwaysSpawn;
+	
+	AActor* SpawnedEffect = MyWorld->SpawnActor<AActor>(Skull_Explosion, GetActorLocation(), GetActorRotation(), SpawnInfo);
+	this->Destroy();
 }

@@ -4,6 +4,7 @@
 
 #include "CoreMinimal.h"
 #include "CharacterBase.h"
+#include "VFX/VFX_Base.h"
 #include "EnemyBase.generated.h"
 
 
@@ -30,7 +31,24 @@ public:
 	UPROPERTY(EditAnywhere,BlueprintReadWrite, Category=AnimBP)
 	TSubclassOf<UPaperZDAnimInstance> EnemyInstance;
 
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	TSubclassOf<AVFX_Base> Skull_Explosion;
+protected:
+	void SetStun();
+	void EndStun();
+	void HandleDefeat();
+	void Defeated();
+
+	
+	
 private:
 	FTimerHandle EnemyHitHandle;
+	FTimerHandle SetStunHandle;
+	FTimerHandle DespawnHandle;
+	
 	float HitStopDuration = 0.1f;
+	float StunnedDuration = 0.5f;
+	float DespawnDuration = 0.5;
+
+	
 };
