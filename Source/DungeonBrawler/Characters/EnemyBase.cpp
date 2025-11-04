@@ -117,4 +117,5 @@ void AEnemyBase::Defeated()
 	
 	AActor* SpawnedEffect = MyWorld->SpawnActor<AActor>(Skull_Explosion, GetActorLocation(), GetActorRotation(), SpawnInfo);
 	this->Destroy();
+	GetWorldTimerManager().ClearTimer(DespawnHandle);
 }

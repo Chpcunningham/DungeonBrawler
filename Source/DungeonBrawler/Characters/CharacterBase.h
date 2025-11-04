@@ -70,6 +70,9 @@ protected:
 	UPROPERTY(EditAnywhere)
 	class UCurveFloat* KnockbackCurve;
 
+	UFUNCTION()
+	bool CanTakeDamage();
+
 private:
 	FOnTimelineFloat KnockbackUpdate;
 	FTimerHandle HitStopHandle;

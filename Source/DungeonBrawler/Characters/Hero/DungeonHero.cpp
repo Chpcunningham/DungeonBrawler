@@ -54,6 +54,8 @@ void ADungeonHero::BeginPlay()
 			PlayerSubsystem->AddMappingContext(InputMappingContext, 0);
 		}
 	}
+
+	HealthComp->OnInvincibilityEndDelegate.AddDynamic(this, &ADungeonHero::OnInvincibilityEnd_DelegateSignature);
 }
 
 void ADungeonHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -90,8 +92,32 @@ void ADungeonHero::OnAttackCompleted(bool isCompleted)
 	IsAttacking = false;
 }
 
+void ADungeonHero::FlashSpriteVisibility()
+{
+	if (GetSprite())
+	{
+		GetSprite()->SetVisibility(!GetSprite()->IsVisible());
+	}
+}
+
+void ADungeonHero::HandleSpriteVisibility()
+{
+	if (!IsValid(this)) return;
+	
+	GetWorldTimerManager().SetTimer(
+			VisibleHandle,
+			FTimerDelegate::CreateUObject(
+				this,
+				&ADungeonHero::FlashSpriteVisibility
+				),
+				0.1f,
+				true
+				);
+}
+
 void ADungeonHero::HandleHitExtension()
 {
+	HealthComp->StartInvincibility();
 	if (UPaperZDAnimInstance* CharAnimInstance = GetAnimationComponent()->GetAnimInstance())
 	{
 		IsStunned = true;
@@ -154,6 +180,12 @@ bool ADungeonHero::CanMoveHero()
 		return true;
 	}
 	return false;
+}
+
+void ADungeonHero::OnInvincibilityEnd_DelegateSignature()
+{
+	GetWorldTimerManager().ClearTimer(VisibleHandle);
+	GetSprite()->SetVisibility(true);
 }
 
 void ADungeonHero::CheckHitBox()

@@ -7,6 +7,7 @@
 #include "Components/BoxComponent.h"
 #include "DungeonBrawler/Public/Components/HealthComp.h"
 #include "GameFramework/CharacterMovementComponent.h"
+#include "Hero/DungeonHero.h"
 #include "Kismet/KismetMathLibrary.h"
 
 
@@ -53,7 +54,7 @@ void ACharacterBase::BeginPlay()
 void ACharacterBase::AnyDamageTaken(AActor* DamagedActor, float Damage, const class UDamageType* DamageType,
                                     class AController* InstigatedBy, AActor* DamageCauser)
 {
-	if (!HealthComp->IsDefeated)
+	if (CanTakeDamage())
 	{
 		HealthComp->DecreaseHealth(Damage);
 		GetKnockBack(DamageCauser);
@@ -99,6 +100,18 @@ void ACharacterBase::AnyDamageTaken(AActor* DamagedActor, float Damage, const cl
 	}
 }
 
+bool ACharacterBase::CanTakeDamage()
+{
+	if (HealthComp->IsDefeated == false && HealthComp->IsInvincible == false)
+	{
+		return true;
+	}
+	else
+	{
+		return false;
+	}
+}
+
 void ACharacterBase::GetKnockBack(AActor* Actor)
 {
 	FVector DamageCauser = Actor->GetActorLocation();
@@ -139,5 +152,13 @@ void ACharacterBase::OnStunnedOverrideCompleted(bool isCompleted)
 		{
 			CharAnimInstance->JumpToNode(FName("DeadJump"));
 		}
+	}
+	else 
+	{
+		if (ADungeonHero* Hero = Cast<ADungeonHero>(this))
+		{
+			Hero->HandleSpriteVisibility();
+		}
+		
 	}
 }

@@ -34,6 +34,11 @@ public:
 	
 	UFUNCTION()
 	void OnAttackCompleted(bool isCompleted);
+	
+	UFUNCTION()
+	void FlashSpriteVisibility();
+
+	void HandleSpriteVisibility();
 
 	virtual void HandleHitExtension() override;
 
@@ -58,6 +63,7 @@ public:
 private:
 	bool IsAttacking;
 
+	FTimerHandle VisibleHandle;
 	FTimerHandle HeroHitHandle;
 	float HitStopDuration = 0.1f;
 
@@ -73,4 +79,7 @@ private:
 	void SwingSword(const FInputActionValue& Value);
 	void MoveHero(const FInputActionValue& Value);
 	bool CanMoveHero();
+
+	UFUNCTION()
+	void OnInvincibilityEnd_DelegateSignature();
 };
