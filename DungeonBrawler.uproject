@@ -11,7 +11,8 @@
 			"AdditionalDependencies": [
 				"Engine",
 				"PaperZD",
-				"AIModule"
+				"AIModule",
+				"UMG"
 			]
 		}
 	],

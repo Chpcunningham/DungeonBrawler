@@ -23,8 +23,6 @@ class DUNGEONBRAWLER_API ADungeonHero : public ACharacterBase
 
 public:
 	ADungeonHero();
-
-	
 	
 	virtual void BeginPlay() override;
 	virtual void SetupPlayerInputComponent(UInputComponent* PlayerInputComponent) override;
@@ -39,12 +37,15 @@ public:
 	void FlashSpriteVisibility();
 
 	void HandleSpriteVisibility();
-
 	virtual void HandleHitExtension() override;
-
 	virtual void EndHitStop(ACharacterBase* ActorHitStop) override;
-
 	virtual void OnStunnedOverrideCompleted(bool isCompleted) override;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UMainHud* MainHUD;
+
+	UPROPERTY(EditAnywhere, BlueprintReadWrite)
+	class UHeartPiece* HeartPieceInstance;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D Directionality;

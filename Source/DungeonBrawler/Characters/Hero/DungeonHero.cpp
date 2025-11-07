@@ -9,12 +9,14 @@
 #include "EnhancedInputSubsystems.h"
 #include "PaperFlipbookComponent.h"
 #include "PaperZDAnimInstance.h"
+#include "Blueprint/UserWidget.h"
 #include "Components/BoxComponent.h"
 #include "Components/HealthComp.h"
 #include "DungeonBrawler/Characters/EnemyBase.h"
 #include "GameFramework/CharacterMovementComponent.h"
 #include "GameFramework/SpringArmComponent.h"
 #include "Kismet/GameplayStatics.h"
+#include "WIdgets/MainHud.h"
 
 ADungeonHero::ADungeonHero()
 {
@@ -56,6 +58,12 @@ void ADungeonHero::BeginPlay()
 	}
 
 	HealthComp->OnInvincibilityEndDelegate.AddDynamic(this, &ADungeonHero::OnInvincibilityEnd_DelegateSignature);
+
+	if (MainHUD != nullptr)
+	{
+		MainHUD->AddToViewport();
+		MainHUD->GetHeartBox()->InitializeHealth(HeartPieceInstance);
+	}
 }
 
 void ADungeonHero::SetupPlayerInputComponent(UInputComponent* PlayerInputComponent)
@@ -118,6 +126,7 @@ void ADungeonHero::HandleSpriteVisibility()
 void ADungeonHero::HandleHitExtension()
 {
 	HealthComp->StartInvincibility();
+	HurtBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	if (UPaperZDAnimInstance* CharAnimInstance = GetAnimationComponent()->GetAnimInstance())
 	{
 		IsStunned = true;
@@ -186,6 +195,7 @@ void ADungeonHero::OnInvincibilityEnd_DelegateSignature()
 {
 	GetWorldTimerManager().ClearTimer(VisibleHandle);
 	GetSprite()->SetVisibility(true);
+	HurtBox->SetCollisionEnabled(ECollisionEnabled::QueryAndPhysics);
 }
 
 void ADungeonHero::CheckHitBox()
