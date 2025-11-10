@@ -18,7 +18,10 @@ public:
 	virtual void NativeConstruct() override;
 
 	UFUNCTION()
-	void InitializeHealth(UHeartPiece* HeartPiece);
+	void InitializeHealth(TSubclassOf<UHeartPiece> HeartPiece, float Maxhealth) const;
+
+	UFUNCTION()
+	void UpdateCurrentHealth(float CurrentHealth) const;
 
 protected:
 	UPROPERTY(EditAnywhere, meta=(BindWidget))

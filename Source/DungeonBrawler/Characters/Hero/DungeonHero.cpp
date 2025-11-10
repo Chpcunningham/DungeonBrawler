@@ -62,7 +62,7 @@ void ADungeonHero::BeginPlay()
 	if (MainHUD != nullptr)
 	{
 		MainHUD->AddToViewport();
-		MainHUD->GetHeartBox()->InitializeHealth(HeartPieceInstance);
+		MainHUD->GetHeartBox()->InitializeHealth(HeartPieceInstance, HealthComp->MaxHealth);
 	}
 }
 
@@ -125,6 +125,7 @@ void ADungeonHero::HandleSpriteVisibility()
 
 void ADungeonHero::HandleHitExtension()
 {
+	MainHUD->GetHeartBox()->UpdateCurrentHealth(HealthComp->CurrentHealth);
 	HealthComp->StartInvincibility();
 	HurtBox->SetCollisionEnabled(ECollisionEnabled::NoCollision);
 	if (UPaperZDAnimInstance* CharAnimInstance = GetAnimationComponent()->GetAnimInstance())

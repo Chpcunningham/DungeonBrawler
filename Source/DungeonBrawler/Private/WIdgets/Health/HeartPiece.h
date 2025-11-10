@@ -16,12 +16,21 @@ class UHeartPiece : public UUserWidget
 
 public:
 	virtual void NativeConstruct() override;
+
+	UFUNCTION()
+	void SetHeartImage(bool bIsFull);
 protected:
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	class USizeBox* HeartPieceWrap;
 
 	UPROPERTY(EditAnywhere, meta=(BindWidget))
 	class UImage* HeartPieceImage;
+
+	UPROPERTY(EditAnywhere, category = "HeartTextures")
+	UTexture2D* FullHeartTexture;
+
+	UPROPERTY(EditAnywhere, category = "HeartTextures")
+	UTexture2D* EmptyHeartTexture;
 	
 	
 };

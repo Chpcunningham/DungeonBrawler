@@ -10,6 +10,7 @@
 class UCameraComponent;
 class UBoxComponent;
 class UInputAction;
+class UHeartPiece;
 struct FInputActionValue;
 class UInputMappingContext;
 class USpringArmComponent;
@@ -45,7 +46,7 @@ public:
 	class UMainHud* MainHUD;
 
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
-	class UHeartPiece* HeartPieceInstance;
+	TSubclassOf<UHeartPiece> HeartPieceInstance;
 	
 	UPROPERTY(EditAnywhere, BlueprintReadWrite)
 	FVector2D Directionality;
